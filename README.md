@@ -1,6 +1,7 @@
 # Research.fi API
 ## Environment setup
-Configuration file ".env" must be manually added into the project root. Otherwise the Docker containers cannot be launched. The file should define these environment variables:
+### Add configuration file .env
+Configuration file **.env** must be manually added into the project root. Otherwise the Docker containers cannot be launched. The file should define these environment variables:
 
 * DJANGO_ENV_ELASTICSEARCH_HOST
   * Hostname/IP and port of the Elasticsearch API
