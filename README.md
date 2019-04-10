@@ -15,3 +15,7 @@ Here is an example of the file content.
 DJANGO_ENV_ELASTICSEARCH_HOST=http://10.143.5.31:9200
 DJANGO_ENV_SECRET_KEY=a7h3d2387hasd6gsad
 ```
+### Start Docker containers
+```
+docker-compose up --build
+```
