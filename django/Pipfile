@@ -9,6 +9,7 @@ verify_ssl = true
 django = "==2.2"
 gunicorn = "==19.9.0"
 django-revproxy = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.7"
