@@ -5,8 +5,8 @@
 // :author: CSC - IT Center for Science Ltd., Espoo Finland servicedesk@csc.fi
 // :license: MIT
 node {
-  def registry = "tmp123"
-  def imagename = "djangodocker"
+  def registry = ${env.DOCKER_REGISTRY}
+  def imagename = "researchfi-api"
   def docker_image = "${registry}/${imagename}:testing"
 
   stage('Print environment variables') {
