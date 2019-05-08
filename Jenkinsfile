@@ -5,7 +5,7 @@
 // :author: CSC - IT Center for Science Ltd., Espoo Finland servicedesk@csc.fi
 // :license: MIT
 node {
-  def registry = ${env.DOCKER_REGISTRY}
+  def registry = "${env.DOCKER_REGISTRY}"
   def imagename = "researchfi-api"
   def docker_image = "${registry}/${imagename}:testing"
 
