@@ -16,6 +16,8 @@ node {
   def artifactory_server = "${env.ARTIFACTORY_SERVER}"
   // Docker registry in the Artifactory
   def registry = "${env.DOCKER_REGISTRY}"
+  // Dockerfile name in the Git repository
+  def dockerfile = "django/Dockerfile"
   // Docker image name
   def imagename = "researchfi-api-django"
   // Git branch name. Converted to lowercase letters to prevent problems when creating Docker image.
