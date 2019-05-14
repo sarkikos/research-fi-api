@@ -17,9 +17,9 @@ node {
   // Docker registry in the Artifactory
   def registry = "${env.DOCKER_REGISTRY}"
   // Dockerfile name in the Git repository
-  def dockerfile = "django/Dockerfile"
+  def dockerfile = "nginx/Dockerfile"
   // Docker image name
-  def imagename = "researchfi-api-django"
+  def imagename = "researchfi-api-nginx"
   // Git branch name. Converted to lowercase letters to prevent problems when creating Docker image.
   def branchname = "${env.BRANCH_NAME}".toLowerCase()
   // Git commit hash to be used as a tag for the Docker image. Get the hash using shell script.
@@ -39,7 +39,7 @@ node {
    * Build and tag Docker image
    */
   stage('Build and tag Docker image') {
-    sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} django/"
+    sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} nginx/"
   }
 
   /*
