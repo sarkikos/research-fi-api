@@ -33,6 +33,13 @@ node {
     echo sh(returnStdout: true, script: 'env')
   }
 
+ /*
+   * Build and tag Docker image
+   */
+  stage('Build and tag Docker image') {
+    sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} ."
+  }
+
   /*
    * Push Docker image to registry only if Git branch is 'master' or 'devel'
    */
