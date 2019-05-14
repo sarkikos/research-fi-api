@@ -39,7 +39,7 @@ node {
    * Build and tag Docker image
    */
   stage('Build and tag Docker image') {
-    sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} ."
+    sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} django/"
   }
 
   /*
