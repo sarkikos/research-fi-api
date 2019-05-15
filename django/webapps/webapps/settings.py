@@ -121,3 +121,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Import local settings, if defined.
+# Local settings can be used to overwrite values in development and testing environments.
+try:
+  from .local_settings import *
+except ImportError:
+  pass

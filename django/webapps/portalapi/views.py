@@ -10,10 +10,8 @@ from http import HTTPStatus
 from revproxy.views import ProxyView
 
 
-class PublicationProxyView(ProxyView):
+class ElasticsearchProxyView(ProxyView):
     """
-    Handle Publications api request.
-
     Proxies GET request to Elasticsearch.
     All other HTTP requests are blocked and responded with status code 405 Method Not Allowed.
     """
@@ -30,7 +28,7 @@ class PublicationProxyView(ProxyView):
             return HttpResponseNotAllowed(['GET'])
 
         try:
-            return super(PublicationProxyView, self).dispatch(request, *args, **kwargs)
+            return super(ElasticsearchProxyView, self).dispatch(request, *args, **kwargs)
         except:
             print('Error: Cannot connect to Elasticsearch at ' + settings.ELASTICSEARCH_HOST)
             return HttpResponse(status=HTTPStatus.BAD_GATEWAY.value)
@@ -42,4 +40,4 @@ class PublicationProxyView(ProxyView):
     retries = None
 
     # The URL of the proxied server.
-    upstream = settings.ELASTICSEARCH_HOST + '/publication'
+    upstream = settings.ELASTICSEARCH_HOST
