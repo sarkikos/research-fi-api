@@ -60,7 +60,6 @@ node {
   stage('Cleanup') {
     sh 'docker images'
 
-    //sh 'docker system prune -f'
     sh "docker rmi ${tag_githash}"
     sh "docker rmi ${tag_latest}"
 
