@@ -36,16 +36,6 @@ node {
   }
 
   /*
-   * Write build_info.txt file.
-   * Add timestamp from environment variable BUILD_TIMESTAMP. Requires Build Timestamp plugin installed in Jenkins.
-   * Add Git commit info from git_commit_hash.
-   */
-  stage('Add build_info.txt') {
-    def build_info = "${env.BUILD_TIMESTAMP} ${git_commit_hash}"
-    sh "echo '${build_info}' > django/webapps/build_info.txt"
-  }
-
-  /*
    * Build and tag Docker image
    */
   stage('Build and tag Docker image') {
