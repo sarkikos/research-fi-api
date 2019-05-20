@@ -122,9 +122,22 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 # Import local settings, if defined.
 # Local settings can be used to overwrite values in development and testing environments.
 try:
-  from .local_settings import *
+    from .local_settings import *
 except ImportError:
-  pass
+    pass
+
+
+# Set build info from text file, if defined.
+BUILD_INFO = 'Build information not available'
+try:
+    build_info_file = os.path.join(BASE_DIR, 'build_info.txt')
+    reader = open(build_info_file, 'r')
+    BUILD_INFO = reader.readline()
+    reader.close()
+except:
+    print(build_info_file + ' not found')
+    pass
