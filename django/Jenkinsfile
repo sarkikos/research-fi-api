@@ -41,7 +41,7 @@ node {
    * Add Git commit info from git_commit_hash.
    */
   stage('Add build_info.txt') {
-    def build_info = "${env.BUILD_TIMESTAMP} ${git_commit_hash}"
+    def build_info = "${env.BUILD_TIMESTAMP} ${git_commit_hash} ${BRANCH_NAME}"
     sh "echo '${build_info}' > django/webapps/build_info.txt"
   }
 
