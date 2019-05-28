@@ -12,9 +12,9 @@ version: '3.7'
 services:
   django:
     build: ./django
-    command: python manage.py runserver 0.0.0.0:8000
+    command: pipenv run python /home/appuser/webapps/manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./django/webapps/:/usr/src/webapps/
+      - ./django/webapps/:/home/appuser/webapps/
     ports:
       - 8000:8000
     environment:

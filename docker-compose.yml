@@ -12,7 +12,7 @@ version: '3.7'
 services:
   django:
     build: ./django
-    command: gunicorn webapps.wsgi:application --bind 0.0.0.0:8000
+    command: pipenv run gunicorn webapps.wsgi:application --bind 0.0.0.0:8000
     expose:
       - 8000
     environment:
@@ -22,6 +22,6 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - 8888:80
+      - 8888:8888
     depends_on:
       - django
