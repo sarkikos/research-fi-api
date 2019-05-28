@@ -5,6 +5,7 @@
 # :author: CSC - IT Center for Science Ltd., Espoo Finland servicedesk@csc.fi
 # :license: MIT
 
-FROM nginx:1.15.0-alpine
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d
+# Use non-root version of nginx
+FROM nginxinc/nginx-unprivileged as nginx
+COPY nginx.conf /etc/nginx/conf.d/
+EXPOSE 8888
