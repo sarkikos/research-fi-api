@@ -13,20 +13,29 @@ from revproxy.views import ProxyView
 class ElasticsearchProxyView(ProxyView):
     """
     Proxies GET request to Elasticsearch.
+    Proxies POST request to Elasticsearch when the POST request URL contains "_search".
     All other HTTP requests are blocked and responded with status code 405 Method Not Allowed.
     """
 
     def dispatch(self, request, *args, **kwargs):
         """
         Extend ProxyView dispatch method.
-        Check that type of HTTP request is GET.
+        Check HTTP request methods.
+        Return HTTP status 405 when request is not allowed.
         Return HTTP status 502 Bad Gateway in case connection to Elasticsearch fails.
         """
-        if request.method != 'GET':
-            # Return 405 Method Not Allowed.
-            # Argument to the constructor is a list of permitted methods.
-            return HttpResponseNotAllowed(['GET'])
 
+        allowed_methods = ("GET", "POST")
+
+        # Reject disallowed requst methods
+        if request.method not in allowed_methods:
+            return HttpResponseNotAllowed(allowed_methods)
+
+        # Reject POST unless request URL contains "_search"
+        if request.method == "POST" and "_search" not in request.path:
+            return HttpResponseNotAllowed(allowed_methods)
+
+        # Forward request to Elasticsearch
         try:
             return super(ElasticsearchProxyView, self).dispatch(request, *args, **kwargs)
         except:

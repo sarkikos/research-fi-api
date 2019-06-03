@@ -12,9 +12,10 @@ from http import HTTPStatus
 class ElasticsearchProxyViewTests(SimpleTestCase):
     base_url = '/portalapi/'
 
-    def test_post_request_not_allowed(self):
-        """When request HTTP method is POST, it is rejected with status code 405 Method Not Allowed"""
-        response = self.client.post(self.base_url)
+    def test_post_request_not_allowed_without_search(self):
+        """When request HTTP method is POST and request URL does not contain '_search', it is rejected with status code 405 Method Not Allowed"""
+        search_url = self.base_url + "/publication,person/"
+        response = self.client.post(search_url)
         self.assertEquals(response.status_code,
                           HTTPStatus.METHOD_NOT_ALLOWED.value)
 
