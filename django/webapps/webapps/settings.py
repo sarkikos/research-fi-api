@@ -21,7 +21,7 @@ SECRET_KEY = os.environ.get('DJANGO_ENV_SECRET_KEY')
 DEBUG = bool(int(os.environ.get('DEBUG', False)))
 
 # A list of strings representing the host/domain names that this Django site can serve
-ALLOWED_HOSTS = ['.csc.fi', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.csc.fi', '.rahtiapp.fi', 'localhost', '127.0.0.1']
 
 # Elasticsearch URL
 ELASTICSEARCH_HOST = os.environ.get('DJANGO_ENV_ELASTICSEARCH_HOST')
@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'webapps.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
 }
 
 # Password validation
