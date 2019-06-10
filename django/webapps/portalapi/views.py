@@ -8,6 +8,7 @@ from django.http import HttpResponseNotAllowed, HttpResponse
 from django.conf import settings
 from http import HTTPStatus
 from revproxy.views import ProxyView
+import re
 
 
 class ElasticsearchProxyView(ProxyView):
@@ -31,9 +32,10 @@ class ElasticsearchProxyView(ProxyView):
         if request.method not in allowed_methods:
             return HttpResponseNotAllowed(allowed_methods)
 
-        # Reject POST unless request URL contains "_search"
-        if request.method == "POST" and "_search" not in request.path:
-            return HttpResponseNotAllowed(allowed_methods)
+        # Reject POST unless request URL contains "_search" in certain place in url
+        if request.method == "POST":
+            if not re.search(r'.*\/portalapi\/.*\/_search', request.path):
+                return HttpResponseNotAllowed(allowed_methods)
 
         # Forward request to Elasticsearch
         try:
