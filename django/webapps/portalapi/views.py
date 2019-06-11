@@ -34,7 +34,7 @@ class ElasticsearchProxyView(ProxyView):
 
         # Reject POST unless request URL contains "_search" in certain place in url
         if request.method == "POST":
-            if not re.search(r'.*\/portalapi\/.*\/_search', request.path):
+            if not re.search(r'.*\/portalapi\/[^\/]*\/_search', request.path):
                 return HttpResponseNotAllowed(allowed_methods)
 
         # Forward request to Elasticsearch
