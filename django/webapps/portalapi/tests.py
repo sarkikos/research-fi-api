@@ -16,7 +16,7 @@ class ElasticsearchProxyViewTests(SimpleTestCase):
         """When request HTTP method is GET it is forwarded to Elasticsearch."""
 
         # In unit test, instead of Elasticsearch, forward request to internal view "ping", which responds with HTTP status 200.
-        search_url = self.base_url + "/ping/"
+        search_url = self.base_url + "ping/"
         response = self.client.get(search_url)
         self.assertEquals(response.status_code,
                           HTTPStatus.OK.value)
