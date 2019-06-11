@@ -24,10 +24,27 @@ class ElasticsearchProxyViewTests(SimpleTestCase):
 
     def test_post_request_not_allowed_without_search(self):
         """When request HTTP method is POST and request URL does not contain '_search', it is rejected with status code 405 Method Not Allowed"""
-        search_url = self.base_url + "/publication,person/"
+        search_url = self.base_url + "publication,person/"
         response = self.client.post(search_url)
         self.assertEquals(response.status_code,
-                          HTTPStatus.METHOD_NOT_ALLOWED.value)
+                          HTTPStatus.METHOD_NOT_ALLOWED.value,
+                          msg=search_url)
+
+    def test_post_request_not_allowed_when_search_is_not_after_index_name(self):
+        """When request HTTP method is POST and request URL does not contain '_search' after index name(s), it is rejected with status code 405 Method Not Allowed"""
+        search_url = self.base_url + "publication,person/somepathname/_search"
+        response = self.client.post(search_url)
+        self.assertEquals(response.status_code,
+                          HTTPStatus.METHOD_NOT_ALLOWED.value,
+                          msg=search_url)
+
+    def test_post_request_not_allowed_when_search_in_URL_parameters(self):
+        """When request HTTP method is POST and request URL contains '_search' in URL parameters, it is rejected with status code 405 Method Not Allowed"""
+        search_url = self.base_url + "publication,person?_search"
+        response = self.client.post(search_url)
+        self.assertEquals(response.status_code,
+                          HTTPStatus.METHOD_NOT_ALLOWED.value,
+                          msg=search_url)
 
     def test_put_request_not_allowed(self):
         """When request HTTP method is PUT, it is rejected with status code 405 Method Not Allowed"""
