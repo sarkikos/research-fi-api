@@ -4,11 +4,11 @@
 #
 # :author: CSC - IT Center for Science Ltd., Espoo Finland servicedesk@csc.fi
 # :license: MIT
-from django.urls import path
 from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+    url('ping', views.ping, name='ping'),
     url(r'^(?P<path>.*)$',
         views.ElasticsearchProxyView.as_view(), name='elasticsearch-proxy-view'),
 ]

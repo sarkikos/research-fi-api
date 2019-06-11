@@ -12,6 +12,16 @@ from http import HTTPStatus
 class ElasticsearchProxyViewTests(SimpleTestCase):
     base_url = '/portalapi/'
 
+    def test_get_request_is_allowed(self):
+        """When request HTTP method is GET it is forwarded to Elasticsearch."""
+
+        # In unit test, instead of Elasticsearch, forward request to internal view "ping", which responds with HTTP status 200.
+        search_url = self.base_url + "ping/"
+        response = self.client.get(search_url)
+        self.assertEquals(response.status_code,
+                          HTTPStatus.OK.value)
+
+
     def test_post_request_not_allowed_without_search(self):
         """When request HTTP method is POST and request URL does not contain '_search', it is rejected with status code 405 Method Not Allowed"""
         search_url = self.base_url + "publication,person/"
