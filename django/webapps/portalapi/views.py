@@ -52,3 +52,11 @@ class ElasticsearchProxyView(ProxyView):
 
     # The URL of the proxied server.
     upstream = settings.ELASTICSEARCH_HOST
+
+
+def ping(request):
+    """
+    Responds to request with status 200 OK.
+    Used in unit test to simulate successfull response from Elasticsearch.
+    """
+    return HttpResponse(status=HTTPStatus.OK.value)
