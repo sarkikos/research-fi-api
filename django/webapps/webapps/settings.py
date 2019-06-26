@@ -21,7 +21,7 @@ SECRET_KEY = os.environ.get('DJANGO_ENV_SECRET_KEY')
 DEBUG = bool(int(os.environ.get('DEBUG', False)))
 
 # A list of strings representing the host/domain names that this Django site can serve
-ALLOWED_HOSTS = ['.csc.fi', '.rahtiapp.fi', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.csc.fi', '.researchfi.svc.cluster.local', 'localhost', '127.0.0.1']
 
 # Elasticsearch URL
 ELASTICSEARCH_HOST = os.environ.get('DJANGO_ENV_ELASTICSEARCH_HOST')
