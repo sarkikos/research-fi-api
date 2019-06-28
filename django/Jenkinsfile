@@ -29,50 +29,67 @@ node {
   def tag_latest = "${registry}/${imagename}/${branchname}:latest"
 
   /*
-   * Print environment variables for Jenkins pipeline debugging purposes.
+   * Wrap stages in try-catch-finally.
+   * Clean up of Docker images is in the 'finally' block, so that it will be always executed even if the script fails inside some stage.
    */
-  stage('Print environment variables') {
-    echo sh(returnStdout: true, script: 'env')
-  }
+  try {
+    /*
+     * Print environment variables for Jenkins pipeline debugging purposes.
+     */
+    stage('Print environment variables') {
+      echo sh(returnStdout: true, script: 'env')
+    }
 
-  /*
-   * Write build_info.txt file.
-   * Add timestamp from environment variable BUILD_TIMESTAMP. Requires Build Timestamp plugin installed in Jenkins.
-   * Add Git commit info from git_commit_hash.
-   */
-  stage('Add build_info.txt') {
-    def build_info = "${env.BUILD_TIMESTAMP} - ${git_commit_hash} - ${BRANCH_NAME}"
-    sh "echo '${build_info}' > django/webapps/build_info.txt"
-  }
+    /*
+     * Write build_info.txt file.
+     * Add timestamp from environment variable BUILD_TIMESTAMP. Requires Build Timestamp plugin installed in Jenkins.
+     * Add Git commit info from git_commit_hash.
+     */
+    stage('Add build_info.txt') {
+      def build_info = "${env.BUILD_TIMESTAMP} - ${git_commit_hash} - ${BRANCH_NAME}"
+      sh "echo '${build_info}' > django/webapps/build_info.txt"
+    }
 
- /*
-   * Build and tag Docker image
-   */
-  stage('Build and tag Docker image') {
-    sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} django/"
-  }
+   /*
+    * Build and tag Docker image
+    */
+    stage('Build and tag Docker image') {
+      sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} django/"
+    }
 
-  /*
-   * Push Docker image to registry only if Git branch is 'master' or 'devel'
-   */
-  if ("${branchname}" == "master" || "${branchname}" == "devel") {
-    stage('Push Docker image') {
-      withDockerRegistry(url: "https://${registry}", credentialsId: 'artifactory-credentials') {
-        sh "docker push ${tag_githash}"
-        sh "docker push ${tag_latest}"
+    /*
+     * Python unit tests.
+     * Start Docker container and run Python unit tests.
+     */
+    stage('Unit tests'){
+      sh "docker run -e DJANGO_ENV_SECRET_KEY=abc123 ${tag_githash} /bin/ash -c 'cd webapps; pipenv run python manage.py test'"
+    }
+
+    /*
+    * Push Docker image to registry only if Git branch is 'master' or 'devel'
+    */
+    if ("${branchname}" == "master" || "${branchname}" == "devel") {
+      stage('Push Docker image') {
+        withDockerRegistry(url: "https://${registry}", credentialsId: 'artifactory-credentials') {
+          sh "docker push ${tag_githash}"
+          sh "docker push ${tag_latest}"
+        }
       }
     }
-  }
-
-  /*
-   * Cleanup. Delete Docker images.
-   */
-  stage('Cleanup') {
-    sh 'docker images'
-
-    sh "docker rmi ${tag_githash}"
-    sh "docker rmi ${tag_latest}"
-
-    sh 'docker images'
+  } catch (e) {
+    /*
+     * Throw error 
+     */
+    throw e
+  } finally {
+    stage('Clean up') {
+      /*
+       * Cleanup. Delete Docker images.
+       */
+      sh 'docker images'
+      sh "docker rmi -f ${tag_githash}"
+      sh "docker rmi -f ${tag_latest}"
+      sh 'docker images'
+    }
   }
 }
