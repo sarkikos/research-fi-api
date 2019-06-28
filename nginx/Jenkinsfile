@@ -6,6 +6,20 @@
 // :license: MIT
 node {
   /*
+   * Set Jenkins properties.
+   * - Discard old build logs after specified time
+   */
+  properties(
+    [
+      buildDiscarder(
+        logRotator(
+          numToKeepStr: '10'
+        )
+      )
+    ]
+  )
+
+  /*
    * Get source files from Git repository.
    */
   stage('Get source files from Git') {
@@ -29,40 +43,50 @@ node {
   def tag_latest = "${registry}/${imagename}/${branchname}:latest"
 
   /*
-   * Print environment variables for Jenkins pipeline debugging purposes.
+   * Wrap stages in try-catch-finally.
+   * Clean up of Docker images is in the 'finally' block, so that it will be always executed even if the script fails inside some stage.
    */
-  stage('Print environment variables') {
-    echo sh(returnStdout: true, script: 'env')
-  }
+  try {
 
-  /*
-   * Build and tag Docker image
-   */
-  stage('Build and tag Docker image') {
-    sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} nginx/"
-  }
+    /*
+    * Print environment variables for Jenkins pipeline debugging purposes.
+    */
+    stage('Print environment variables') {
+      echo sh(returnStdout: true, script: 'env')
+    }
 
-  /*
-   * Push Docker image to registry only if Git branch is 'master' or 'devel'
-   */
-  if ("${branchname}" == "master" || "${branchname}" == "devel") {
-    stage('Push Docker image') {
-      withDockerRegistry(url: "https://${registry}", credentialsId: 'artifactory-credentials') {
-        sh "docker push ${tag_githash}"
-        sh "docker push ${tag_latest}"
+    /*
+    * Build and tag Docker image
+    */
+    stage('Build and tag Docker image') {
+      sh "docker build -f ${dockerfile} -t ${tag_githash} -t ${tag_latest} nginx/"
+    }
+
+    /*
+    * Push Docker image to registry only if Git branch is 'master' or 'devel'
+    */
+    if ("${branchname}" == "master" || "${branchname}" == "devel") {
+      stage('Push Docker image') {
+        withDockerRegistry(url: "https://${registry}", credentialsId: 'artifactory-credentials') {
+          sh "docker push ${tag_githash}"
+          sh "docker push ${tag_latest}"
+        }
       }
     }
-  }
-
-  /*
-   * Cleanup. Delete Docker images.
-   */
-  stage('Cleanup') {
-    sh 'docker images'
-
-    sh "docker rmi ${tag_githash}"
-    sh "docker rmi ${tag_latest}"
-
-    sh 'docker images'
+  } catch (e) {
+    /*
+     * Throw error 
+     */
+    throw e
+  } finally {
+    /*
+    * Cleanup. Delete Docker images.
+    */
+    stage('Cleanup') {
+      sh 'docker images'
+      sh "docker rmi -f ${tag_githash}"
+      sh "docker rmi -f ${tag_latest}"
+      sh 'docker images'
+    }
   }
 }

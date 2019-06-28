@@ -96,10 +96,10 @@ node {
      */
     throw e
   } finally {
+    /*
+     * Cleanup. Delete Docker images.
+     */
     stage('Clean up') {
-      /*
-       * Cleanup. Delete Docker images.
-       */
       sh 'docker images'
       sh "docker rmi -f ${tag_githash}"
       sh "docker rmi -f ${tag_latest}"
