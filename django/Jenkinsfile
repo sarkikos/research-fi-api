@@ -76,7 +76,7 @@ node {
      * Start Docker container and run Python unit tests.
      */
     stage('Unit tests'){
-      sh "docker run -e DJANGO_ENV_SECRET_KEY=abc123 ${tag_githash} /bin/ash -c 'cd webapps; pipenv run python manage.py test'"
+      sh "docker run -rm -e DJANGO_ENV_SECRET_KEY=abc123 ${tag_githash} /bin/ash -c 'cd webapps; pipenv run python manage.py test'"
     }
 
     /*
