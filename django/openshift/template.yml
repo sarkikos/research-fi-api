@@ -56,7 +56,7 @@ objects:
           - name: APP_HOME
             value: "webapps"
           - name: APP_MODULE
-            value: "webapps.wsgi.application"
+            value: "webapps.wsgi:application"
           - name: DISABLE_SETUP_PY_PROCESSING
             value: "true"
           - name: DISABLE_COLLECTSTATIC
