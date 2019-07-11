@@ -1,0 +1,154 @@
+# This file is part of the research.fi API service
+#
+# Copyright 2019 Ministry of Education and Culture, Finland
+#
+# :author: CSC - IT Center for Science Ltd., Espoo Finland servicedesk@csc.fi
+# :license: MIT
+apiVersion: v1
+kind: Template
+metadata:
+  labels:
+    app: researchfi-api
+    template: researchfi-api
+  name: researchfi-api
+objects:
+
+# Service
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: researchfi-api
+    annotations:
+      description: Research.fi api service
+  spec:
+    ports:
+      - name: api
+        port: 8080
+        targetPort: 8080
+    selector:
+      name: researchfi-api
+
+# ImageStream
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: researchfi-api
+
+# BuildConfig using source to image (s2i) strategy
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: researchfi-api-build
+  spec:
+    source:
+      git:
+        uri: https://github.com/CSCfi/research-fi-api.git
+        ref: devel
+      contextDir: django
+    strategy:
+      sourceStrategy:
+        from:
+          kind: DockerImage
+          name: centos/python-36-centos7
+        env:
+          - name: ENABLE_PIPENV
+            value: "true"
+          - name: APP_HOME
+            value: "webapps"
+          - name: APP_MODULE
+            value: "webapps.wsgi:application"
+          - name: DISABLE_SETUP_PY_PROCESSING
+            value: "true"
+          - name: DISABLE_COLLECTSTATIC
+            value: "true"
+          - name: DISABLE_MIGRATE
+            value: "true"
+    output:
+      to:
+        kind: ImageStreamTag
+        name: researchfi-api:latest
+
+# BuildConfig using Docker build strategy
+#- apiVersion: v1
+#  kind: BuildConfig
+#  metadata:
+#    name: researchfi-api-build
+#  spec:
+#    source:
+#      git:
+#        uri: https://github.com/CSCfi/research-fi-api.git
+#        ref: devel
+#      contextDir: django
+#    strategy:
+#      dockerStrategy:
+#        dockerfilePath: Dockerfile
+#    output:
+#      to:
+#        kind: ImageStreamTag
+#        name: researchfi-api:latest
+
+# Jenkins pipeline
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: researchfi-api-pipeline
+  spec:
+    source:
+      git:
+        uri: https://github.com/CSCfi/research-fi-api.git
+        ref: devel
+      contextDir: django
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: openshift/Jenkinsfile
+
+# Deployment config
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: researchfi-api
+  spec:
+    template:
+      metadata:
+        labels:
+          name: researchfi-api
+      spec:
+        containers:
+          - name: researchfi-api
+            image: ts/researchfi-api
+            ports:
+              - containerPort: 8000
+                protocol: TCP
+            env:
+              - name: DJANGO_ENV_SECRET_KEY
+                value: ${DJANGO_ENV_SECRET_KEY}
+              - name: DJANGO_ENV_ELASTICSEARCH_HOST
+                value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
+#            command:
+#              - gunicorn
+#            args:
+#              - webapps.wsgi:application
+#              - --bind
+#              - 0.0.0.0:8000
+    replicas: 1
+    selector:
+      name: researchfi-api
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - researchfi-api
+        from:
+          kind: ImageStreamTag
+          name: researchfi-api:latest
+    strategy:
+      type: Rolling
+
+# Template parameters
+parameters:
+- name: DJANGO_ENV_SECRET_KEY
+  description: Sets Django SECRET_KEY
+- name: DJANGO_ENV_ELASTICSEARCH_HOST
+  description: Elasticsearch address
