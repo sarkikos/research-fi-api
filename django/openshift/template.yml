@@ -43,7 +43,7 @@ objects:
     source:
       git:
         uri: https://github.com/CSCfi/research-fi-api.git
-        ref: CSCTTV-636_3 # change to 'devel'
+        ref: devel
       contextDir: django
     strategy:
       sourceStrategy:
@@ -77,7 +77,7 @@ objects:
 #    source:
 #      git:
 #        uri: https://github.com/CSCfi/research-fi-api.git
-#        ref: CSCTTV-636_3 # change to 'devel'
+#        ref: devel
 #      contextDir: django
 #    strategy:
 #      dockerStrategy:
@@ -96,7 +96,7 @@ objects:
     source:
       git:
         uri: https://github.com/CSCfi/research-fi-api.git
-        ref: CSCTTV-636_3 # change to 'devel'
+        ref: devel
       contextDir: django
     strategy:
       jenkinsPipelineStrategy:
