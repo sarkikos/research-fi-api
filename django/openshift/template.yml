@@ -146,6 +146,20 @@ objects:
     strategy:
       type: Rolling
 
+# Route
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: frontend
+    annotations:
+      haproxy.router.openshift.io/ip_whitelist: 194.157.116.18
+  spec:
+    host: researchfi-api-researchfi.rahtiapp.fi
+    path: "/" 
+    to:
+      kind: Service
+      name: api
+
 # Template parameters
 parameters:
 - name: DJANGO_ENV_SECRET_KEY
