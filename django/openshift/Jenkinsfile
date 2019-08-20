@@ -19,5 +19,10 @@ pipeline {
         openshiftBuild(bldCfg: 'researchfi-api-build', showBuildLogs: 'true')
       }
     }
+    stage('Tag') {
+      steps {
+        openshiftTag(srcStream: 'researchfi-api', srcTag: 'latest', destStream: 'researchfi-api', destTag: 'test123')
+      }
+    }
   }
 }
