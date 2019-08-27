@@ -67,6 +67,8 @@ objects:
       to:
         kind: ImageStreamTag
         name: researchfi-api:latest
+    successfulBuildsHistoryLimit: 4 
+    failedBuildsHistoryLimit: 4
 
 # BuildConfig using Docker build strategy
 #- apiVersion: v1
@@ -86,6 +88,8 @@ objects:
 #      to:
 #        kind: ImageStreamTag
 #        name: researchfi-api:latest
+#    successfulBuildsHistoryLimit: 4
+#    failedBuildsHistoryLimit: 4
 
 # Jenkins pipeline
 - apiVersion: v1
