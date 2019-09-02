@@ -32,6 +32,18 @@ pipeline {
         }
       }
     }
+    stage('Test') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              def deploymentConfigTest = openshift.selector("dc", "researchfi-api-deployment-test")
+              deploymentConfigTest.rollout()
+            }
+          }
+        }
+      }
+    }
     stage('Deploy') {
       steps {
         script {

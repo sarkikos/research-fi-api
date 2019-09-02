@@ -115,7 +115,7 @@ objects:
     template:
       metadata:
         labels:
-          name: researchfi-api-deployment
+          name: researchfi-api
       spec:
         containers:
           - name: researchfi-api
@@ -128,12 +128,46 @@ objects:
                 value: ${DJANGO_ENV_SECRET_KEY}
               - name: DJANGO_ENV_ELASTICSEARCH_HOST
                 value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
-#            command:
-#              - gunicorn
-#            args:
-#              - webapps.wsgi:application
-#              - --bind
-#              - 0.0.0.0:8000
+    replicas: 1
+    selector:
+      name: researchfi-api
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - researchfi-api
+        from:
+          kind: ImageStreamTag
+          name: researchfi-api:latest
+    strategy:
+      type: Rolling
+
+# Deployment config for testing
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: researchfi-api-deployment-test
+  spec:
+    template:
+      metadata:
+        labels:
+          name: researchfi-api
+      spec:
+        containers:
+          - name: researchfi-api
+            image: ts/researchfi-api
+            command:
+              - 'cd webapps; python manage.py test;'
+            ports:
+              - containerPort: 8000
+                protocol: TCP
+            env:
+              - name: DJANGO_ENV_SECRET_KEY
+                value: abcd1234
+              - name: DJANGO_ENV_ELASTICSEARCH_HOST
+                value: dd2d3iud32ud3ud
     replicas: 1
     selector:
       name: researchfi-api
