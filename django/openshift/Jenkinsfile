@@ -14,9 +14,34 @@ pipeline {
     timeout(time: 5, unit: 'MINUTES') 
   }
   stages {
+    stage('Miscellaneous') {
+      steps('Print environment variables') {
+        echo "Running build ${env.BUILD_ID} on ${env.JENKINS_URL}"
+        echo "Git commit is ${env.GIT_COMMIT}"
+      }
+    }
     stage('Build') {
       steps {
-        openshiftBuild(bldCfg: 'researchfi-api-build', showBuildLogs: 'true')
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              def buildConfig = openshift.selector("bc", "researchfi-api-build")
+              buildConfig.startBuild().logs("-f")
+            }
+          }
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              def deploymentConfig = openshift.selector("dc", "researchfi-api-deployment")
+              deploymentConfig.rollout()
+            }
+          }
+        }
       }
     }
   }
