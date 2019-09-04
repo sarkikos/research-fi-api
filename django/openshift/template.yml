@@ -17,7 +17,7 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: researchfi-api
+    name: researchfi-api-service
     annotations:
       description: Research.fi api service
   spec:
@@ -29,10 +29,32 @@ objects:
       name: researchfi-api
 
 # ImageStream
+#- apiVersion: v1
+#  kind: ImageStream
+#  metadata:
+#    name: researchfi-api
+
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    name: researchfi-api
+    name: researchfi-api-test-image
+
+#- apiVersion: v1
+#  kind: ImageStream
+#  metadata:
+#    name: researchfi-api-imagestream
+#  spec:
+#    dockerImageRepository: ${ARTIFACTORY}/researchfi-api-rahti/test
+#    tags:
+#    - from:
+#        kind: DockerImage
+#        name: ${ARTIFACTORY}/researchfi-api-rahti/test
+#      name: latest
+#      importPolicy:
+#        insecure: false
+#        scheduled: false
+#      referencePolicy:
+#        type: Source
 
 # BuildConfig using source to image (s2i) strategy
 - apiVersion: v1
@@ -66,7 +88,9 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: researchfi-api:latest
+        name: researchfi-api-test-image:latest
+        #kind: DockerImage
+        #name: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
     successfulBuildsHistoryLimit: 4 
     failedBuildsHistoryLimit: 4
 
@@ -115,11 +139,13 @@ objects:
     template:
       metadata:
         labels:
-          name: researchfi-api
+          name: researchfi-api-deployment
       spec:
         containers:
-          - name: researchfi-api
-            image: ts/researchfi-api
+          - name: researchfi-api-container
+            #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
+            #image: docker-registry.default.svc:5000/ts/researchfi-api-test-image:latest
+            imagePullPolicy: Always
             ports:
               - containerPort: 8000
                 protocol: TCP
@@ -130,59 +156,36 @@ objects:
                 value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
     replicas: 1
     selector:
-      name: researchfi-api
+      name: researchfi-api-deployment
     triggers:
     - type: ConfigChange
     - type: ImageChange
       imageChangeParams:
         automatic: true
         containerNames:
-        - researchfi-api
+        - researchfi-api-test
         from:
           kind: ImageStreamTag
-          name: researchfi-api:latest
+          name: researchfi-api-test-image:latest
     strategy:
       type: Rolling
 
-# Deployment config for testing
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    name: researchfi-api-deployment-test
-  spec:
-    template:
-      metadata:
-        labels:
-          name: researchfi-api
-      spec:
-        containers:
-          - name: researchfi-api
-            image: ts/researchfi-api
-            command:
-              - 'cd webapps; python manage.py test;'
-            ports:
-              - containerPort: 8000
-                protocol: TCP
-            env:
-              - name: DJANGO_ENV_SECRET_KEY
-                value: abcd1234
-              - name: DJANGO_ENV_ELASTICSEARCH_HOST
-                value: dd2d3iud32ud3ud
-    replicas: 1
-    selector:
-      name: researchfi-api
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-        - researchfi-api
-        from:
-          kind: ImageStreamTag
-          name: researchfi-api:latest
-    strategy:
-      type: Rolling
+# Job for unit test
+#- apiVersion: batch/v1
+#  kind: Job
+#  metadata:
+#    name: researchfi-api
+#  spec:
+#    template:
+#      spec:
+#        containers:
+#        - name: researchfi-api-test
+#          image: ts/researchfi-api
+#          command:
+#          - sh
+#          - -c
+#          - cd webapps; python manage.py test;
+#          restartPolicy: Never
 
 # Template parameters
 parameters:
@@ -190,3 +193,5 @@ parameters:
   description: Sets Django SECRET_KEY
 - name: DJANGO_ENV_ELASTICSEARCH_HOST
   description: Elasticsearch address
+#- name: ARTIFACTORY
+#  description: Artifactory address, without 'http://' or 'https://', without trailing '/', for example 'myhostname.mydomain.fi'.

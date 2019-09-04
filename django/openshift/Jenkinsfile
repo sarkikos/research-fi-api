@@ -32,29 +32,17 @@ pipeline {
         }
       }
     }
-    stage('Test') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.withProject() {
-              def deploymentConfigTest = openshift.selector("dc", "researchfi-api-deployment-test")
-              deploymentConfigTest.rollout()
-            }
-          }
-        }
-      }
-    }
-    stage('Deploy') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.withProject() {
-              def deploymentConfig = openshift.selector("dc", "researchfi-api-deployment")
-              deploymentConfig.rollout()
-            }
-          }
-        }
-      }
-    }
+    //stage('Deploy') {
+    //  steps {
+    //    script {
+    //      openshift.withCluster() {
+    //        openshift.withProject() {
+    //          def deploymentConfig = openshift.selector("dc", "researchfi-api-deployment")
+    //          deploymentConfig.rollout()
+    //        }
+    //      }
+    //    }
+    //  }
+    //}
   }
 }
