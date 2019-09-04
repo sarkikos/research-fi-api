@@ -39,6 +39,11 @@ objects:
   metadata:
     name: researchfi-api-test-image
 
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: researchfi-api-prod-image
+
 #- apiVersion: v1
 #  kind: ImageStream
 #  metadata:
@@ -130,7 +135,7 @@ objects:
       jenkinsPipelineStrategy:
         jenkinsfilePath: openshift/Jenkinsfile
 
-# Deployment config
+# Deployment config for test
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -142,9 +147,9 @@ objects:
           name: researchfi-api-deployment
       spec:
         containers:
-          - name: researchfi-api-container
+          - name: researchfi-api-test-container
             #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
-            #image: docker-registry.default.svc:5000/ts/researchfi-api-test-image:latest
+            image: ts/researchfi-api-test-image
             imagePullPolicy: Always
             ports:
               - containerPort: 8000
@@ -163,10 +168,50 @@ objects:
       imageChangeParams:
         automatic: true
         containerNames:
-        - researchfi-api-test
+        - researchfi-api-test-container
         from:
           kind: ImageStreamTag
           name: researchfi-api-test-image:latest
+    strategy:
+      type: Rolling
+
+# Deployment config for prod
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: researchfi-api-deployment-prod
+  spec:
+    template:
+      metadata:
+        labels:
+          name: researchfi-api-deployment-prod
+      spec:
+        containers:
+          - name: researchfi-api-prod-container
+            #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
+            image: ts/researchfi-api-prod-image
+            imagePullPolicy: Always
+            ports:
+              - containerPort: 8000
+                protocol: TCP
+            env:
+              - name: DJANGO_ENV_SECRET_KEY
+                value: ${DJANGO_ENV_SECRET_KEY}
+              - name: DJANGO_ENV_ELASTICSEARCH_HOST
+                value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
+    replicas: 1
+    selector:
+      name: researchfi-api-deployment-prod
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - researchfi-api-prod-container
+        from:
+          kind: ImageStreamTag
+          name: researchfi-api-prod-image:latest
     strategy:
       type: Rolling
 

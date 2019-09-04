@@ -44,5 +44,16 @@ pipeline {
     //    }
     //  }
     //}
+    stage('Deploy to production') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              openshift.tag("researchfi-api-test-image:latest", "researchfi-api-prod-image:latest")
+            }
+          }
+        }
+      }
+    }
   }
 }
