@@ -20,7 +20,8 @@ pipeline {
         echo "Git commit is ${env.GIT_COMMIT}"
       }
     }
-    stage('Build') {
+
+    stage('Build image') {
       steps {
         script {
           openshift.withCluster() {
@@ -32,6 +33,23 @@ pipeline {
         }
       }
     }
+
+    stage('Unit test') {
+
+    }
+
+    stage('Promote to devel') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              openshift.tag("researchfi-api-test:latest", "researchfi-api-devel:latest")
+            }
+          }
+        }
+      }
+    }
+
     //stage('Deploy') {
     //  steps {
     //    script {
@@ -44,15 +62,16 @@ pipeline {
     //    }
     //  }
     //}
+
     stage('Deploy to production') {
       steps {
-        timeout(time: 1, unit: 'MINUTES') {
+        timeout(time: 15, unit: 'MINUTES') {
           input message: "Deploy to production?", ok: "Deploy"
         }
         script {
           openshift.withCluster() {
             openshift.withProject() {
-              openshift.tag("researchfi-api-test-image:latest", "researchfi-api-prod-image:latest")
+              openshift.tag("researchfi-api-devel:latest", "researchfi-api-production:latest")
             }
           }
         }

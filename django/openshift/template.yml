@@ -37,12 +37,17 @@ objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    name: researchfi-api-test-image
+    name: researchfi-api-test
 
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    name: researchfi-api-prod-image
+    name: researchfi-api-devel
+
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: researchfi-api-production
 
 #- apiVersion: v1
 #  kind: ImageStream
@@ -93,7 +98,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: researchfi-api-test-image:latest
+        name: researchfi-api-test:latest
         #kind: DockerImage
         #name: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
     successfulBuildsHistoryLimit: 4 
@@ -135,21 +140,21 @@ objects:
       jenkinsPipelineStrategy:
         jenkinsfilePath: openshift/Jenkinsfile
 
-# Deployment config for test
+# Deployment config for devel
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: researchfi-api-deployment
+    name: researchfi-api-deployment-devel
   spec:
     template:
       metadata:
         labels:
-          name: researchfi-api-deployment
+          name: researchfi-api-deployment-devel
       spec:
         containers:
-          - name: researchfi-api-test-container
+          - name: researchfi-api-devel-container
             #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
-            image: ts/researchfi-api-test-image
+            image: ts/researchfi-api-devel
             imagePullPolicy: Always
             ports:
               - containerPort: 8000
@@ -161,35 +166,35 @@ objects:
                 value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
     replicas: 1
     selector:
-      name: researchfi-api-deployment
+      name: researchfi-api-deployment-devel
     triggers:
     - type: ConfigChange
     - type: ImageChange
       imageChangeParams:
         automatic: true
         containerNames:
-        - researchfi-api-test-container
+        - researchfi-api-devel-container
         from:
           kind: ImageStreamTag
-          name: researchfi-api-test-image:latest
+          name: researchfi-api-devel:latest
     strategy:
       type: Rolling
 
-# Deployment config for prod
+# Deployment config for production
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: researchfi-api-deployment-prod
+    name: researchfi-api-deployment-production
   spec:
     template:
       metadata:
         labels:
-          name: researchfi-api-deployment-prod
+          name: researchfi-api-deployment-production
       spec:
         containers:
-          - name: researchfi-api-prod-container
+          - name: researchfi-api-production-container
             #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
-            image: ts/researchfi-api-prod-image
+            image: ts/researchfi-api-production
             imagePullPolicy: Always
             ports:
               - containerPort: 8000
@@ -201,17 +206,17 @@ objects:
                 value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
     replicas: 1
     selector:
-      name: researchfi-api-deployment-prod
+      name: researchfi-api-deployment-production
     triggers:
     - type: ConfigChange
     - type: ImageChange
       imageChangeParams:
         automatic: true
         containerNames:
-        - researchfi-api-prod-container
+        - researchfi-api-production-container
         from:
           kind: ImageStreamTag
-          name: researchfi-api-prod-image:latest
+          name: researchfi-api-production:latest
     strategy:
       type: Rolling
 
