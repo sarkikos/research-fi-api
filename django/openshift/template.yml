@@ -161,9 +161,9 @@ objects:
                 protocol: TCP
             env:
               - name: DJANGO_ENV_SECRET_KEY
-                value: ${DJANGO_ENV_SECRET_KEY}
+                value: ${DJANGO_ENV_SECRET_KEY_DEVEL}
               - name: DJANGO_ENV_ELASTICSEARCH_HOST
-                value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
+                value: ${DJANGO_ENV_ELASTICSEARCH_HOST_DEVEL}
     replicas: 1
     selector:
       name: researchfi-api-deployment-devel
@@ -201,9 +201,9 @@ objects:
                 protocol: TCP
             env:
               - name: DJANGO_ENV_SECRET_KEY
-                value: ${DJANGO_ENV_SECRET_KEY}
+                value: ${DJANGO_ENV_SECRET_KEY_PRODUCTION}
               - name: DJANGO_ENV_ELASTICSEARCH_HOST
-                value: ${DJANGO_ENV_ELASTICSEARCH_HOST}
+                value: ${DJANGO_ENV_ELASTICSEARCH_HOST_PRODUCTION}
     replicas: 1
     selector:
       name: researchfi-api-deployment-production
@@ -239,9 +239,13 @@ objects:
 
 # Template parameters
 parameters:
-- name: DJANGO_ENV_SECRET_KEY
-  description: Sets Django SECRET_KEY
+- name: DJANGO_ENV_SECRET_KEY_DEVEL
+  description: Devel enviroment Django SECRET_KEY
 - name: DJANGO_ENV_ELASTICSEARCH_HOST
-  description: Elasticsearch address
+  description: Devel environment Elasticsearch address
+- name: DJANGO_ENV_SECRET_KEY_PRODUCTION
+  description: Production enviroment Django SECRET_KEY
+- name: DJANGO_ENV_ELASTICSEARCH_PRODUCTION
+  description: Production environment Elasticsearch address
 #- name: ARTIFACTORY
 #  description: Artifactory address, without 'http://' or 'https://', without trailing '/', for example 'myhostname.mydomain.fi'.

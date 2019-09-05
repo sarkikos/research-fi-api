@@ -10,16 +10,12 @@ pipeline {
       label 'nodejs' 
     }
   }
+
   options {
     timeout(time: 5, unit: 'MINUTES') 
   }
+
   stages {
-    stage('Miscellaneous') {
-      steps('Print environment variables') {
-        echo "Running build ${env.BUILD_ID} on ${env.JENKINS_URL}"
-        echo "Git commit is ${env.GIT_COMMIT}"
-      }
-    }
 
     stage('Build image') {
       steps {
