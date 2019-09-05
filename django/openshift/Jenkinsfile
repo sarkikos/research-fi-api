@@ -36,7 +36,7 @@ pipeline {
 
     stage('Unit test') {
       steps {
-        
+        echo "Unit tests will be executed here"
       }
     }
 
