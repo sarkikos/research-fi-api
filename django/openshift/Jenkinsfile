@@ -30,25 +30,34 @@ pipeline {
       }
     }
 
+    //stage('Promote to devel') {
+    //  steps {
+    //    script {
+    //      openshift.withCluster() {
+    //        openshift.withProject() {
+    //          openshift.tag("researchfi-api-test:latest", "researchfi-api-devel:latest")
+    //        }
+    //      }
+    //    }
+    //  }
+    //}
+
     stage('Unit test') {
       steps {
         script {
           openshift.withCluster() {
             openshift.withProject() {
-              def deploymentConfig = openshift.selector("dc", "api-test")
-              deploymentConfig.rollout()
-            }
-          }
-        }
-      }
-    }
+              // Get pod running the devel image
+              def dcObj = openshift.selector("dc", "api-devel").object()
+              def podSelector = openshift.selector("pod", [deployment: "${module}-${dcObj.status.latestVersion}"])
+              podSelector.untilEach {
+                  echo "pod: ${it.name()}"
+                  return it.object().status.containerStatuses[0].ready
+              }
 
-    stage('Promote to devel') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.withProject() {
-              openshift.tag("researchfi-api-test:latest", "researchfi-api-devel:latest")
+
+              // Execute python unit test
+
             }
           }
         }
