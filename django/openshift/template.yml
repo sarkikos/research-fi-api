@@ -140,6 +140,50 @@ objects:
       jenkinsPipelineStrategy:
         jenkinsfilePath: openshift/Jenkinsfile
 
+# Deployment config for Test
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: api-test
+  spec:
+    template:
+      metadata:
+        labels:
+          name: researchfi-api-deployment-test
+      spec:
+        containers:
+          - name: api-test
+            image: ts/researchfi-api-test
+            imagePullPolicy: Always
+            ports:
+              - containerPort: 8000
+                protocol: TCP
+            env:
+              - name: DJANGO_ENV_SECRET_KEY
+                value: ${DJANGO_ENV_SECRET_KEY_DEVEL}
+              - name: DJANGO_ENV_ELASTICSEARCH_HOST
+                value: ${DJANGO_ENV_ELASTICSEARCH_HOST_DEVEL}
+            command:
+              - 'python'
+            args:
+              - 'manage.py'
+              - 'test'
+    replicas: 1
+    selector:
+      name: researchfi-api-deployment-test
+#    triggers:
+#    - type: ConfigChange
+#    - type: ImageChange
+#      imageChangeParams:
+#        automatic: true
+#        containerNames:
+#        - api-test
+#        from:
+#          kind: ImageStreamTag
+#          name: researchfi-api-test:latest
+    strategy:
+      type: Rolling
+
 # Deployment config for devel
 - apiVersion: v1
   kind: DeploymentConfig

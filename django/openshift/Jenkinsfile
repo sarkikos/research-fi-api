@@ -32,7 +32,14 @@ pipeline {
 
     stage('Unit test') {
       steps {
-        echo "Unit tests will be executed here"
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              def deploymentConfig = openshift.selector("dc", "api-test")
+              deploymentConfig.rollout()
+            }
+          }
+        }
       }
     }
 
