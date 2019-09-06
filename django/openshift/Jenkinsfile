@@ -49,7 +49,7 @@ pipeline {
             openshift.withProject() {
               // Get pod running the devel image
               def dcObj = openshift.selector("dc", "api-devel").object()
-              def podSelector = openshift.selector("pod", [deployment: "${module}-${dcObj.status.latestVersion}"])
+              def podSelector = openshift.selector("pod", [deployment: "api-devel-${dcObj.status.latestVersion}"])
               podSelector.untilEach {
                   echo "pod: ${it.name()}"
                   return it.object().status.containerStatuses[0].ready
