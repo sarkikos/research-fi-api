@@ -56,7 +56,7 @@ pipeline {
                   return it.object().status.containerStatuses[0].ready
               }
 
-              def podname = sh "oc get pod --selector name=researchfi-api-deployment-devel -o jsonpath='{.items[0].metadata.name}'"
+              def podname = sh(script: "oc get pod --selector name=researchfi-api-deployment-devel -o jsonpath='{.items[0].metadata.name}'", returnStdout: true)
               echo "Pod name is ${podname}"
 
               // Execute python unit test
