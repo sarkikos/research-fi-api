@@ -44,33 +44,19 @@ pipeline {
       }
     }
 
-    //stage('Promote to devel') {
-    //  steps {
-    //    script {
-    //      openshift.withCluster() {
-    //        openshift.withProject() {
-    //          openshift.tag("researchfi-api-test:latest", "researchfi-api-devel:latest")
-    //        }
-    //      }
-    //    }
-    //  }
-    //}
 
     stage('Unit test') {
-   
-        
-              
-              
+      steps {
+        script {
+          echo "##### Run unit test ################################################"
 
-              echo "##### Run unit test ################################################"
+          def podname = sh(script: "oc get pod --selector name=researchfi-api-deployment-devel -o jsonpath='{.items[0].metadata.name}'", returnStdout: true)
+          echo "Pod name is ${podname}"
 
-              def podname = sh(script: "oc get pod --selector name=researchfi-api-deployment-devel -o jsonpath='{.items[0].metadata.name}'", returnStdout: true)
-              echo "Pod name is ${podname}"
-
-              // Execute python unit test
-              sh "oc exec ${podname} -- bash -c  'cd webapps && python manage.py test'"
-     
-    
+          // Execute python unit test
+          sh "oc exec ${podname} -- bash -c  'cd webapps && python manage.py test'"
+        }
+      }
     }
 
     //stage('Deploy') {
