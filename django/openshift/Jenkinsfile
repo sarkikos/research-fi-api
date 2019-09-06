@@ -57,6 +57,7 @@ pipeline {
               }
 
               def podname = sh "oc get pod --selector name=researchfi-api-deployment-devel -o jsonpath='{.items[0].metadata.name}'"
+              echo "Pod name is ${podname}"
 
               // Execute python unit test
               sh "oc exec ${podname} -it -- bash -c  'cd webapps && python manage.py test'"
