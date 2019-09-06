@@ -144,7 +144,7 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: researchfi-api-deployment-devel
+    name: api-devel
   spec:
     template:
       metadata:
@@ -152,7 +152,7 @@ objects:
           name: researchfi-api-deployment-devel
       spec:
         containers:
-          - name: researchfi-api-devel-container
+          - name: api-devel
             #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
             image: ts/researchfi-api-devel
             imagePullPolicy: Always
@@ -173,7 +173,7 @@ objects:
       imageChangeParams:
         automatic: true
         containerNames:
-        - researchfi-api-devel-container
+        - api-devel
         from:
           kind: ImageStreamTag
           name: researchfi-api-devel:latest
@@ -184,7 +184,7 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: researchfi-api-deployment-production
+    name: api-production
   spec:
     template:
       metadata:
@@ -192,7 +192,7 @@ objects:
           name: researchfi-api-deployment-production
       spec:
         containers:
-          - name: researchfi-api-production-container
+          - name: api-production
             #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
             image: ts/researchfi-api-production
             imagePullPolicy: Always
@@ -213,7 +213,7 @@ objects:
       imageChangeParams:
         automatic: true
         containerNames:
-        - researchfi-api-production-container
+        - api-production
         from:
           kind: ImageStreamTag
           name: researchfi-api-production:latest
