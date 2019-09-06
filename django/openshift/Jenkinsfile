@@ -57,7 +57,7 @@ pipeline {
     //}
 
     stage('Unit test') {
-      steps {
+   
         
               
               
@@ -70,7 +70,7 @@ pipeline {
               // Execute python unit test
               sh "oc exec ${podname} -- bash -c  'cd webapps && python manage.py test'"
      
-      }
+    
     }
 
     //stage('Deploy') {
