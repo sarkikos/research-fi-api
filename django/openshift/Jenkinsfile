@@ -23,9 +23,10 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject() {
               echo "##### BUILD ################################################"
+              sh "oc start-build researchfi-api-build"
 
-              def buildConfig = openshift.selector("bc", "researchfi-api-build")
-              buildConfig.startBuild().logs("-f")
+              //def buildConfig = openshift.selector("bc", "researchfi-api-build")
+              //buildConfig.startBuild().logs("-f")
 
 
               echo "##### Wait until devel pod is ready ################################################"
@@ -43,7 +44,6 @@ pipeline {
         }
       }
     }
-
 
     stage('Unit test') {
       steps {
