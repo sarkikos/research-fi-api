@@ -52,7 +52,7 @@ pipeline {
           echo "Pod name is ${podname}"
 
           // Execute python unit test
-          sh "oc exec ${podname} -- bash -c  'cd webapps && python manage.py test'"
+          sh(script: "oc exec ${podname} -- bash -c  'cd webapps && python manage.py test'", returnStdout: true)
         }
       }
     }
