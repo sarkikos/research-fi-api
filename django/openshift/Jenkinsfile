@@ -26,6 +26,18 @@ pipeline {
 
               def buildConfig = openshift.selector("bc", "researchfi-api-build")
               buildConfig.startBuild().logs("-f")
+
+
+              echo "##### Wait until devel pod is ready ################################################"
+
+              // Get pod running the devel image
+              def dcObj = openshift.selector("dc", "api-devel").object()
+              def podSelector = openshift.selector("pod", [deployment: "api-devel-${dcObj.status.latestVersion}"])
+              podSelector.untilEach {
+                  //echo "pod: ${it.name()}"
+                  //podname = "${it.name()}"
+                  return it.object().status.containerStatuses[0].ready
+              }
             }
           }
         }
@@ -46,20 +58,9 @@ pipeline {
 
     stage('Unit test') {
       steps {
-        script {
-          openshift.withCluster() {
-            openshift.withProject() {
+        
               
-              echo "##### Wait until devel pod is ready ################################################"
-
-              // Get pod running the devel image
-              def dcObj = openshift.selector("dc", "api-devel").object()
-              def podSelector = openshift.selector("pod", [deployment: "api-devel-${dcObj.status.latestVersion}"])
-              podSelector.untilEach {
-                  //echo "pod: ${it.name()}"
-                  //podname = "${it.name()}"
-                  return it.object().status.containerStatuses[0].ready
-              }
+              
 
               echo "##### Run unit test ################################################"
 
@@ -68,9 +69,7 @@ pipeline {
 
               // Execute python unit test
               sh "oc exec ${podname} -- bash -c  'cd webapps && python manage.py test'"
-            }
-          }
-        }
+     
       }
     }
 
