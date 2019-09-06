@@ -22,6 +22,8 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject() {
+              echo "##### BUILD ################################################"
+
               def buildConfig = openshift.selector("bc", "researchfi-api-build")
               buildConfig.startBuild().logs("-f")
             }
@@ -47,6 +49,9 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject() {
+              
+              echo "##### Wait until devel pod is ready ################################################"
+
               // Get pod running the devel image
               def dcObj = openshift.selector("dc", "api-devel").object()
               def podSelector = openshift.selector("pod", [deployment: "api-devel-${dcObj.status.latestVersion}"])
@@ -55,6 +60,8 @@ pipeline {
                   //podname = "${it.name()}"
                   return it.object().status.containerStatuses[0].ready
               }
+
+              echo "##### Run unit test ################################################"
 
               def podname = sh(script: "oc get pod --selector name=researchfi-api-deployment-devel -o jsonpath='{.items[0].metadata.name}'", returnStdout: true)
               echo "Pod name is ${podname}"
