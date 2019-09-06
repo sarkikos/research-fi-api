@@ -48,15 +48,15 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject() {
               // Get pod running the devel image
-              def podname = ""
               def dcObj = openshift.selector("dc", "api-devel").object()
               def podSelector = openshift.selector("pod", [deployment: "api-devel-${dcObj.status.latestVersion}"])
               podSelector.untilEach {
-                  echo "pod: ${it.name()}"
-                  podname = "${it.name()}"
+                  //echo "pod: ${it.name()}"
+                  //podname = "${it.name()}"
                   return it.object().status.containerStatuses[0].ready
               }
 
+              def podname = sh "oc get pod --selector name=researchfi-api-deployment-devel -o jsonpath='{.items[0].metadata.name}'"
 
               // Execute python unit test
               sh "oc exec ${podname} -it -- bash -c  'cd webapps && python manage.py test'"
