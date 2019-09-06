@@ -56,7 +56,7 @@ class ElasticsearchProxyViewTests(SimpleTestCase):
         """When request HTTP method is DELETE, it is rejected with status code 405 Method Not Allowed"""
         response = self.client.delete(self.base_url)
         self.assertEquals(response.status_code,
-                          123456)
+                          HTTPStatus.METHOD_NOT_ALLOWED.value)
 
     def test_patch_request_not_allowed(self):
         """When request HTTP method is PATCH, it is rejected with status code 405 Method Not Allowed"""
