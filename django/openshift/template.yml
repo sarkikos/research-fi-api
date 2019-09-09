@@ -28,38 +28,17 @@ objects:
     selector:
       name: researchfi-api
 
-# ImageStream
-#- apiVersion: v1
-#  kind: ImageStream
-#  metadata:
-#    name: researchfi-api
-
+# ImageStream for devel
 - apiVersion: v1
   kind: ImageStream
   metadata:
     name: researchfi-api-devel
 
+# ImageStream for production
 - apiVersion: v1
   kind: ImageStream
   metadata:
     name: researchfi-api-production
-
-#- apiVersion: v1
-#  kind: ImageStream
-#  metadata:
-#    name: researchfi-api-imagestream
-#  spec:
-#    dockerImageRepository: ${ARTIFACTORY}/researchfi-api-rahti/test
-#    tags:
-#    - from:
-#        kind: DockerImage
-#        name: ${ARTIFACTORY}/researchfi-api-rahti/test
-#      name: latest
-#      importPolicy:
-#        insecure: false
-#        scheduled: false
-#      referencePolicy:
-#        type: Source
 
 # BuildConfig using source to image (s2i) strategy
 - apiVersion: v1
@@ -94,31 +73,8 @@ objects:
       to:
         kind: ImageStreamTag
         name: researchfi-api-devel:latest
-        #kind: DockerImage
-        #name: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
     successfulBuildsHistoryLimit: 4 
     failedBuildsHistoryLimit: 4
-
-# BuildConfig using Docker build strategy
-#- apiVersion: v1
-#  kind: BuildConfig
-#  metadata:
-#    name: researchfi-api-build
-#  spec:
-#    source:
-#      git:
-#        uri: https://github.com/CSCfi/research-fi-api.git
-#        ref: devel
-#      contextDir: django
-#    strategy:
-#      dockerStrategy:
-#        dockerfilePath: Dockerfile
-#    output:
-#      to:
-#        kind: ImageStreamTag
-#        name: researchfi-api:latest
-#    successfulBuildsHistoryLimit: 4
-#    failedBuildsHistoryLimit: 4
 
 # Jenkins pipeline
 - apiVersion: v1
@@ -148,7 +104,6 @@ objects:
       spec:
         containers:
           - name: api-devel
-            #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
             image: ts/researchfi-api-devel
             imagePullPolicy: Always
             ports:
@@ -188,7 +143,6 @@ objects:
       spec:
         containers:
           - name: api-production
-            #image: ${ARTIFACTORY}/researchfi-api-rahti/test:latest
             image: ts/researchfi-api-production
             imagePullPolicy: Always
             ports:
@@ -215,32 +169,13 @@ objects:
     strategy:
       type: Rolling
 
-# Job for unit test
-#- apiVersion: batch/v1
-#  kind: Job
-#  metadata:
-#    name: researchfi-api
-#  spec:
-#    template:
-#      spec:
-#        containers:
-#        - name: researchfi-api-test
-#          image: ts/researchfi-api
-#          command:
-#          - sh
-#          - -c
-#          - cd webapps; python manage.py test;
-#          restartPolicy: Never
-
 # Template parameters
 parameters:
 - name: DJANGO_ENV_SECRET_KEY_DEVEL
-  description: Devel enviroment Django SECRET_KEY
+  description: Devel enviroment Django SECRET_KEY, random string.
 - name: DJANGO_ENV_ELASTICSEARCH_HOST_DEVEL
-  description: Devel environment Elasticsearch address
+  description: Devel environment Elasticsearch address, for example 'https://myhost-devel.mydomain:myport'
 - name: DJANGO_ENV_SECRET_KEY_PRODUCTION
-  description: Production enviroment Django SECRET_KEY
+  description: Production enviroment Django SECRET_KEY, random string.
 - name: DJANGO_ENV_ELASTICSEARCH_PRODUCTION
-  description: Production environment Elasticsearch address
-#- name: ARTIFACTORY
-#  description: Artifactory address, without 'http://' or 'https://', without trailing '/', for example 'myhostname.mydomain.fi'.
+  description: Production environment Elasticsearch address, for example 'https://myhost-prod.mydomain:myport'
