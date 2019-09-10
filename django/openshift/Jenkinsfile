@@ -56,6 +56,9 @@ pipeline {
 
           // Execute python unit test in pod
           sh(script: "oc exec ${podname} -- bash -c  'cd webapps && python manage.py test'", returnStdout: true)
+
+          // Copy test result XMLs to Jenkins
+          sh(script: "oc rsync ${podname}:webapps/portalapi/unittest_results/ .", returnStdout: true)
         }
       }
     }
@@ -82,7 +85,7 @@ pipeline {
   }
   post {
     always {
-      junit '**/result.xml'
+      junit 'result.xml'
     }
   }
 }
