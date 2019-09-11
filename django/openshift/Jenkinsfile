@@ -48,6 +48,7 @@ pipeline {
     /*
     Run Python unit test in devel pod.
     */
+    /*
     stage('Unit test') {
       steps {
         script {
@@ -62,6 +63,7 @@ pipeline {
         }
       }
     }
+    */
 
     /*
     Deploy to production.
