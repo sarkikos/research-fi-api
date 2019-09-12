@@ -41,7 +41,7 @@ pipeline {
     Wait until devel deployment is ready.
     At this point the devel environment should be deploying, triggered by a new image from previous step. 
     */
-    steps('Wait devel deployment') {
+    stage('Wait devel deployment') {
       steps {
         script {
           openshift.withCluster() {
