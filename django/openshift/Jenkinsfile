@@ -31,7 +31,21 @@ pipeline {
               def buildConfig = openshift.selector("bc", "researchfi-api-build")
               // Start build and display logs
               buildConfig.startBuild().logs("-f")
+            }
+          }
+        }
+      }
+    }
 
+    /*
+    Wait until devel deployment is ready.
+    At this point the devel environment should be deploying, triggered by a new image from previous step. 
+    */
+    steps('Wait devel deployment') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
               // Get object of pod running the devel image
               def dcObj = openshift.selector("dc", "researchfi-api-production-deployment").object()
               def podSelector = openshift.selector("pod", [deployment: "researchfi-api-devel-deployment-${dcObj.status.latestVersion}"])
