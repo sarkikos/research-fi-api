@@ -28,7 +28,7 @@ objects:
         port: 8080
         targetPort: 8080
     selector:
-      deploymentconfig: api-devel
+      dc: api-devel
 
 # Service
 - apiVersion: v1
@@ -45,7 +45,7 @@ objects:
         port: 8081
         targetPort: 8081
     selector:
-      deploymentconfig: api-production
+      dc: api-productionn
 
 # ImageStream for devel
 - apiVersion: v1
@@ -128,12 +128,12 @@ objects:
   spec:
     selector:
       app: researchfi-api
-      deploymentconfig: api-devel
+      dc: api-devel
     template:
       metadata:
         labels:
           app: researchfi-api
-          deploymentconfig: api-devel
+          dc: api-devel
       spec:
         containers:
           - name: api-devel
@@ -171,12 +171,12 @@ objects:
   spec:
     selector:
       app: researchfi-api
-      deploymentconfig: api-production
+      dc: api-production
     template:
       metadata:
         labels:
           app: researchfi-api
-          deploymentconfig: api-production
+          dc: api-production
       spec:
         containers:
           - name: api-production
