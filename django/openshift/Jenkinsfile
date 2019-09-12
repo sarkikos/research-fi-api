@@ -47,7 +47,7 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject() {
               // Get object of pod running the devel image
-              def dcObj = openshift.selector("dc", "researchfi-api-production-deployment").object()
+              def dcObj = openshift.selector("dc", "researchfi-api-devel-deployment").object()
               def podSelector = openshift.selector("pod", [deployment: "researchfi-api-devel-deployment-${dcObj.status.latestVersion}"])
               // Wait until pod is ready
               podSelector.untilEach {
