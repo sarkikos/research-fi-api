@@ -11,6 +11,13 @@ pipeline {
     }
   }
 
+  environment {
+    GIT_COMMIT_SHORT = sh(
+      script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
+      returnStdout: true
+    )
+  }
+
   options {
     timeout(time: 15, unit: 'MINUTES') 
   }
@@ -33,7 +40,7 @@ pipeline {
 
               // New image gets tag "latest", it is defined in build config.
               // Add git commit tag.
-              openshift.tag("researchfi-api-devel:latest", "researchfi-api-devel:${GIT_COMMIT}")
+              openshift.tag("researchfi-api-devel:latest", "researchfi-api-devel:${GIT_COMMIT_SHORT}")
             }
           }
         }
