@@ -7,7 +7,7 @@
 pipeline {
   agent {
     node {
-      label 'python' 
+      label 'nodejs' 
     }
   }
 
@@ -46,6 +46,14 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject() {
+              //def rm = openshift.selector("dc", "researchfi-api-devel-deployment").rollout()
+              timeout(5) { 
+                openshift.selector("dc", templateName).related('pods').untilEach(1) {
+                  return (it.object().status.phase == "Running")
+                }
+              }
+              
+              /*
               // Get object of pod running the devel image
               def dcObj = openshift.selector("dc", "researchfi-api-devel-deployment").object()
               def podSelector = openshift.selector("pod", [deployment: "researchfi-api-devel-deployment-${dcObj.status.latestVersion}"])
@@ -53,6 +61,7 @@ pipeline {
               podSelector.untilEach {
                 return it.object().status.containerStatuses[0].ready
               }
+              */
             }
           }
         }
