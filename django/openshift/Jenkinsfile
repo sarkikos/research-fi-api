@@ -15,8 +15,6 @@ pipeline {
     timeout(time: 15, unit: 'MINUTES') 
   }
 
-  def imagetag_git_commit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-
   stages {
 
     /*
@@ -25,7 +23,7 @@ pipeline {
     stage('Misc') {
       steps {
         script {
-          echo "GIT commit is ${imagetag_git_commit}"
+          echo "GIT commit is ${GIT_COMMIT}"
         }
       }
     }
