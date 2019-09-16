@@ -16,18 +16,6 @@ pipeline {
   }
 
   stages {
-
-    /*
-    Get source files from Git repository.
-    */
-    stage('Misc') {
-      steps {
-        script {
-          echo "GIT commit is ${GIT_COMMIT}"
-        }
-      }
-    }
-
     /*
     Build image using build config "researchfi-api-build".
     After build is complete, OpenShift's image change trigger automatically updates devel deployment.
