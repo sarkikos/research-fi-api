@@ -42,6 +42,10 @@ pipeline {
               def buildConfig = openshift.selector("bc", "researchfi-api-build")
               // Start build and display logs
               buildConfig.startBuild().logs("-f")
+
+              // New image gets tag "latest", it is defined in build config.
+              // Add git commit tag.
+              openshift.tag("researchfi-api-devel:latest", "researchfi-api-devel:${GIT_COMMIT}")
             }
           }
         }
