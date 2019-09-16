@@ -47,7 +47,7 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject() {
               //def rm = openshift.selector("dc", "researchfi-api-devel-deployment").rollout()
-              sleep 60
+              sleep 15
               timeout(5) { 
                 openshift.selector("dc", "researchfi-api-devel-deployment").related('pods').untilEach(1) {
                   return (it.object().status.phase == "Running")
