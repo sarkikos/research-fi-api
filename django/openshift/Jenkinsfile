@@ -18,6 +18,17 @@ pipeline {
   stages {
 
     /*
+    Get source files from Git repository.
+    */
+    stage('GIT checkout') {
+      checkout scm
+    }
+
+    // Git commit hash to be used as a tag for the Docker image. Get the hash using shell script.
+    def git_commit_hash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+    echo "GIT commit is ${git_commit_hash}"
+
+    /*
     Build image using build config "researchfi-api-build".
     After build is complete, OpenShift's image change trigger automatically updates devel deployment.
     Wait until devel pod is ready. 
