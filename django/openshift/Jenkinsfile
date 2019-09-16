@@ -15,19 +15,17 @@ pipeline {
     timeout(time: 15, unit: 'MINUTES') 
   }
 
+  def imagetag_git_commit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+
   stages {
 
     /*
     Get source files from Git repository.
     */
-    stage('GIT checkout') {
+    stage('Misc') {
       steps {
         script {
-          checkout scm
-
-          // Git commit hash to be used as a tag for the Docker image. Get the hash using shell script.
-          def git_commit_hash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-          echo "GIT commit is ${git_commit_hash}"
+          echo "GIT commit is ${imagetag_git_commit}"
         }
       }
     }
