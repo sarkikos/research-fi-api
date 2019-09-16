@@ -54,6 +54,7 @@ objects:
     name: researchfi-api-devel
     labels:
       app: researchfi-api
+      is: devel
 
 # ImageStream for production
 - apiVersion: v1
@@ -62,6 +63,7 @@ objects:
     name: researchfi-api-production
     labels:
       app: researchfi-api
+      is: production
 
 # BuildConfig using source to image (s2i) strategy
 - apiVersion: v1
